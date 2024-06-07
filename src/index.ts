@@ -2,7 +2,8 @@ import express ,{type Application} from 'express';
 import morgan from 'morgan'
 import cors from 'cors'
 import dotenv from "dotenv"
-
+import swaggerUi from "swagger-ui-express";
+// import swaggerOutput from "./swagger_output.json";
 
 import { corsOptions } from './config/config';
 import loggerMiddleware from './middlewares/loggerMiddleware';
