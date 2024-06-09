@@ -4,7 +4,7 @@ import { TokenService } from '../service/token.service'
 import bcrypt from 'bcrypt'
 import { ErrorMiddleware } from '../middlewares/errorMiddleware'
 
-export class AuthController {
+ class AuthController {
   private userDAO: UserDAO
   private tokenService: TokenService
 
@@ -80,4 +80,9 @@ export class AuthController {
 
     res.json({ message: 'Logged out successfully' })
   }
+
+  public async ResetPassword(){}
+ 
 }
+
+export default AuthController
