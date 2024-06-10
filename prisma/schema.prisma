@@ -21,7 +21,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   role ROLE @default(USER)
-  tokens Token[]
+  tokens Token[] 
 }
 
 enum ROLE{

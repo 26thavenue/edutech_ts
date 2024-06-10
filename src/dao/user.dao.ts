@@ -1,7 +1,6 @@
 import {User} from  '@prisma/client'
 import prisma from '../utils/prisma'
 import { ErrorMiddleware } from '../middlewares/errorMiddleware';
-import { UserInput } from '../types';
 import bcrypt from 'bcrypt'
 
 type UserResp = User | ErrorMiddleware;
@@ -41,7 +40,8 @@ type UserResp = User | ErrorMiddleware;
 
     public async getUserById (id:string): Promise<User | null | ErrorMiddleware>{
         if(!id){
-            return new ErrorMiddleware(400, 'Id is required');
+            console.log( new ErrorMiddleware(400, 'Id is required'));
+            return
         }
 
         try {
@@ -52,7 +52,8 @@ type UserResp = User | ErrorMiddleware;
             });
 
             if(!user){
-                return new ErrorMiddleware(404, 'User not found');
+                console.log(new ErrorMiddleware(404, 'User not found'));
+                return
             }
 
             return user;
@@ -66,7 +67,8 @@ type UserResp = User | ErrorMiddleware;
     public async createUser(name:string, password:string, email:string):Promise<UserResp> {
 
         if(!name || !password || !email){
-            return new ErrorMiddleware(400, 'User is required');
+            console.log(new ErrorMiddleware(400, 'User is required'))
+            return ;
         }
 
         try {
@@ -82,7 +84,8 @@ type UserResp = User | ErrorMiddleware;
 
             return newUser;
         } catch (error) {
-             return new ErrorMiddleware(500, `Unknown err  ${error.message}`);
+            console.log(new ErrorMiddleware(500, `Unknown err  ${error.message}`))
+            return ;
         }
 
 
