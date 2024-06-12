@@ -1,4 +1,4 @@
-import {Course} from '@prisma/client'
+import {Chapter, Course} from '@prisma/client'
 import prisma from '../utils/prisma'
 import { ErrorMiddleware } from '../middlewares/errorMiddleware';
 
@@ -114,6 +114,18 @@ export class CourseDAO {
     }
 
     public async updateCourseDetails(id:string, course:CourseResp): Promise<Course|ErrorMiddleware>{
+        return
+    }
+
+    public async getNumberOfRegisteredUsers():Promise< number|null>{
+        return
+    }
+
+    public async getAllChapters():Promise<Chapter[] | null>{
+        return
+    }
+
+    public async getAllChaptersAndLessons():Promise<Chapter[] | null>{
         return
     }
 

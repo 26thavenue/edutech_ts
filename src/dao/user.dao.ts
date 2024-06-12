@@ -1,4 +1,4 @@
-import {User} from  '@prisma/client'
+import {User, Subscription} from  '@prisma/client'
 import prisma from '../utils/prisma'
 import { ErrorMiddleware } from '../middlewares/errorMiddleware';
 import bcrypt from 'bcrypt'
@@ -92,10 +92,34 @@ type UserResp = User | ErrorMiddleware;
 
     }
 
+    // REWRITE THIS FUNCTIONS
+
     public async userDetails(id:string, user:UserResp): Promise<User|ErrorMiddleware>{
         return
     }
 
+
+    public registerCourse(userId:string):Promise<string | null>{
+        if(!userId){
+            console.log(new ErrorMiddleware(401, 'User is required'))
+        }
+        return
+    }
+
+    public async deRegisterCourse(userId:string):Promise<string | null>{
+        if(!userId){
+            console.log(new ErrorMiddleware(401, 'User is required'))
+        }
+        return
+    }
+
+    public async subscribe(userId:string): Promise<Subscription| null>{
+        return
+    }
+
+    public unSubscribe(userId:string): Promise<string | null>{
+        return
+    }
 
 }
 

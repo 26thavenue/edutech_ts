@@ -1,0 +1,9 @@
+
+
+
+
+async function ChangeSubscriptionStatus(userId:string){
+    // CHECK THE CURRENT DATE AND IF THE USER'S SUBSCRIPTION EXPIRE DATE IF 
+    // ITS PAST CHANGE IT TO EXPIRED AND SEND A MAIL BUT IF NOT CONTINUE
+    return
+}
