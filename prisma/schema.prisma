@@ -13,6 +13,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+enum ROLE{
+  ADMIN
+  USER
+}
+
+enum SubscriptionDuration{
+  MONTHLY
+  YEARLY
+}
+
+enum SUBSCRIBED{
+  TRUE
+  FALSE
+  EXPIRED
+}
+
 model User {
   id   String @id @default(cuid())
   name String
@@ -22,13 +39,23 @@ model User {
   updatedAt DateTime @updatedAt
   role ROLE @default(USER)
   tokens Token[] 
+  progress Progress?
+  subscription Subscription?
+  userCourses  UserCourses[]
+  userCoursesChapters UserCoursesChapters[]
 }
 
-enum ROLE{
-  ADMIN
-  USER
-
+model Subscription{
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
+  duration    SubscriptionDuration
+  createdAt   DateTime @default(now())
+  expires     DateTime
+  subscribed  SUBSCRIBED @default(TRUE)
 }
+
+
 
 model Token {
   id           String   @id @default(uuid())
@@ -37,4 +64,113 @@ model Token {
   expires      DateTime
   userId       String
   user         User     @relation(fields: [userId], references: [id])
+  
+}
+
+
+
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  author      String
+  free        Boolean
+  chapters    Chapter[]
+  assesments   Assessment[]
+  users       UserCourses[]
+}
+
+model UserCourses{
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id])
+  isCompleted Boolean @default(false)
+  percentageCompleted Int @default(0)
+  @@id([courseId, userId])
+}
+
+model UserCoursesChapters {
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  chapterId   String
+  chapter     Chapter  @relation(fields: [chapterId], references: [id])
+  isCompleted Boolean @default(false)
+  @@id([chapterId, userId])
+
+}
+
+model Chapter {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  course      Course   @relation(fields: [courseId], references: [id])
+  courseId    String
+  lessons     Lesson[]
+  users       UserCoursesChapters[]
+}
+
+model Lesson {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  videoUrl    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  chapter     Chapter  @relation(fields: [chapterId], references: [id])
+  chapterId   String
+  isCompleted Boolean @default(false)
+  percentageCompleted Int @default(0)
+  assements   Assessment[]
+}
+
+
+model Assessment{
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lessonId    String?
+  lesson      Lesson?   @relation(fields: [lessonId], references: [id])
+  courseId    String?
+  course      Course? @relation(fields: [courseId], references: [id])
+  isCompleted Boolean @default(false)
+  percentageCompleted Int @default(0)
+  questions   Question[]
+}
+
+model Question {
+  id                  String   @id @default(cuid())
+  title               String
+  description         String
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  assessmentId        String
+  assessment          Assessment @relation(fields: [assessmentId], references: [id])
+  options             Option[]
+}
+
+model Option{
+  id          String   @id @default(cuid())
+  title       String
+  isCorrect   Boolean
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  questionId  String
+  question    Question @relation(fields: [questionId], references: [id])
+
+}
+
+model Progress {
+  id          String   @id @default(cuid())
+  EXP         Int
+  level       Int @default(0)
+  user        User @relation(fields: [userId], references: [id])
+  userId      String  @unique
+  
 }

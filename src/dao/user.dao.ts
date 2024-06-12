@@ -92,6 +92,9 @@ type UserResp = User | ErrorMiddleware;
 
     }
 
+    public async userDetails(id:string, user:UserResp): Promise<User|ErrorMiddleware>{
+        return
+    }
 
 
 }
