@@ -103,6 +103,7 @@ type UserResp = User | ErrorMiddleware;
         if(!userId){
             console.log(new ErrorMiddleware(401, 'User is required'))
         }
+        // sendRegistrationMail
         return
     }
 

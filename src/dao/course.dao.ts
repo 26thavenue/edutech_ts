@@ -1,4 +1,4 @@
-import {Chapter, Course} from '@prisma/client'
+import {Assessment, Chapter, Course} from '@prisma/client'
 import prisma from '../utils/prisma'
 import { ErrorMiddleware } from '../middlewares/errorMiddleware';
 
@@ -126,6 +126,16 @@ export class CourseDAO {
     }
 
     public async getAllChaptersAndLessons():Promise<Chapter[] | null>{
+        return
+    }
+
+    public markCourseComplete(): Promise<boolean|ErrorMiddleware>{
+        return
+    }
+
+    
+
+    public createCourseAssesment():Promise<Assessment|ErrorMiddleware>{
         return
     }
 

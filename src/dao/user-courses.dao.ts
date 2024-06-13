@@ -35,6 +35,10 @@ class UserCoursesDAO{
     public async getUserCompletedCourse(userId:string): Promise<Course[]|null>{
         return
     }
+
+     public async getUserUnCompletedCourse(userId:string): Promise<Course[]|null>{
+        return
+    }
 }
 
 export default UserCoursesDAO

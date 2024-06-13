@@ -41,8 +41,10 @@ model User {
   tokens Token[] 
   progress Progress?
   subscription Subscription?
-  userCourses  UserCourses[]
-  userCoursesChapters UserCoursesChapters[]
+  courses  UserCourses[]
+  coursesChapters UserCoursesChapters[]
+  lessons UserLessons[]
+  assessmentScores UserAssessmentScore[]
 }
 
 model Subscription{
@@ -111,6 +113,7 @@ model Chapter {
   course      Course   @relation(fields: [courseId], references: [id])
   courseId    String
   lessons     Lesson[]
+  assessment  Assessment[]
   users       UserCoursesChapters[]
 }
 
@@ -126,6 +129,16 @@ model Lesson {
   isCompleted Boolean @default(false)
   percentageCompleted Int @default(0)
   assements   Assessment[]
+  userlessons UserLessons[]
+}
+
+model UserLessons{
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  lessonId   String
+  lesson     Lesson  @relation(fields: [lessonId], references: [id])
+  isCompleted Boolean @default(false)
+  @@id([lessonId, userId])
 }
 
 
@@ -133,15 +146,32 @@ model Assessment{
   id          String   @id @default(cuid())
   title       String
   description String
+  passingMarker Int    @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   lessonId    String?
   lesson      Lesson?   @relation(fields: [lessonId], references: [id])
   courseId    String?
   course      Course? @relation(fields: [courseId], references: [id])
+  chapterId   String?
+  chapter     Chapter? @relation(fields: [chapterId], references: [id])
   isCompleted Boolean @default(false)
   percentageCompleted Int @default(0)
   questions   Question[]
+  userScores UserAssessmentScore[]
+}
+
+model UserAssessmentScore {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  assessmentId  String
+  assessment    Assessment @relation(fields: [assessmentId], references: [id])
+  score         Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, assessmentId])
 }
 
 model Question {
@@ -155,10 +185,11 @@ model Question {
   options             Option[]
 }
 
+
 model Option{
   id          String   @id @default(cuid())
   title       String
-  isCorrect   Boolean
+  isCorrect   Boolean 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   questionId  String
