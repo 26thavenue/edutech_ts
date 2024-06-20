@@ -84,3 +84,7 @@
 {"level":"info","message":"POST /api/auth/refreshToken undefined","timestamp":"2024-06-20T03:48:54.521Z"}
 {"level":"info","message":"POST /api/auth/refreshToken undefined","timestamp":"2024-06-20T03:49:12.010Z"}
 {"level":"info","message":"POST /api/auth/logout undefined","timestamp":"2024-06-20T03:49:44.846Z"}
+{"level":"info","message":"POST /api/auth/register undefined","timestamp":"2024-06-20T03:53:02.460Z"}
+{"level":"info","message":"GET /api/user ::1","timestamp":"2024-06-20T04:37:44.735Z"}
+{"level":"info","message":"GET /api/user/clxlwwlis0000n2564849qvol ::1","timestamp":"2024-06-20T04:37:53.997Z"}
+{"level":"info","message":"DELETE /api/user/clxlwwlis0000n2564849qvol ::1","timestamp":"2024-06-20T04:38:00.841Z"}
