@@ -11,6 +11,8 @@ dotenv.config()
 const tokenService = new TokenService()
 
 
+
+
 export async function login(req: Request, res: Response){
     // console.log(req.body)
     const { email, password } = req.body 
@@ -57,4 +59,42 @@ export async function login(req: Request, res: Response){
 
 
     
+}
+
+export async function register(req: Request, res: Response){
+    
+    const {name, email, password} = req.body
+
+    if(!email || !password || !name){    
+        const error = new ErrorMiddleware(400, 'Email and password are required');
+        return res.status(error.status).json(error);
+    }
+
+    try {
+
+        const checkIfUserEmailExists = await prisma.user.findFirst({
+            where: {
+                email: email
+            }
+        })
+
+        if(checkIfUserEmailExists){
+            const error = new ErrorMiddleware(409, 'Email already exists');
+            return res.status(error.status).json(error);
+        }
+
+        const user = await prisma.user.create({
+            data: {
+                    email: email,
+                    passwordHash: hashSync(password,10),
+                    name: name
+            }
+        })
+
+        return res.json(user)
+
+    } catch (error:any) {
+        console.error('Unexpected error:', error);
+        return res.json({error: 'Unexpected error'}).status(500);
+    }
 }
