@@ -1,0 +1,5 @@
+- Get All Users ('/user')
+- Get One User ('/user/:id') 
+- Delete User ('/user/:id')
+- Register User (auth/register)
+- Login User (auth/login)

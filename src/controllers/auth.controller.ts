@@ -1,88 +1,60 @@
-import { Request, Response } from 'express'
-import  UserDAO  from '../dao/user.dao'
+import {type Request, type Response} from 'express'
+import {ErrorMiddleware} from '../middlewares/errorMiddleware'
+import prisma from '../utils/prisma'
 import { TokenService } from '../service/token.service'
-import bcrypt from 'bcrypt'
-import { ErrorMiddleware } from '../middlewares/errorMiddleware'
+import { hashSync, compareSync } from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
- class AuthController {
-  private userDAO: UserDAO
-  private tokenService: TokenService
+dotenv.config()
 
-  constructor() {
-    this.userDAO = new UserDAO()
-    this.tokenService = new TokenService()
-  }
+const tokenService = new TokenService()
 
-  public async Register(req: Request, res: Response) {
-    const { name, email, password } = req.body
-    try {
-      const user = await this.userDAO.createUser(name, email, password)
-      res.status(201).json({ message: 'User created', user })
-    } catch (error) {
-      res.status(500).json({ message: 'Error creating user' })
+
+export async function login(req: Request, res: Response){
+    // console.log(req.body)
+    const { email, password } = req.body 
+
+    if(!email || !password ){    
+        const error = new ErrorMiddleware(400, 'Email and password are required');
+        return res.status(error.status).json(error);
     }
-  }
-
-  public async Login(req: Request, res: Response) { 
-    const{ email, password} = req.body
 
     try {
-      const user = await this.userDAO.getUserByEmail(email)  
 
-      if(!user || user instanceof ErrorMiddleware){
-          return res.status(404).json({message: 'User not found'})
-     }
+        const user = await prisma.user.findFirst({
+            where: {
+                email: email
+            }
+        })
 
-      const isValid = await bcrypt.compare(password, user.passwordHash)
+        if(!user){
+            const error = new ErrorMiddleware(404, 'No such user exists please sign up');
+            return res.status(error.status).json(error);
+        }
 
-      if (!password || !isValid) return res.status(403).json({ message: 'Invalid username or  password' })
+        if(!compareSync(password,user.passwordHash)){
+            const error = new ErrorMiddleware(403, 'Invalid credentials');
+            return res.status(error.status).json(error);
+        }
 
-      const accessToken = this.tokenService.generateAccessToken(user.id)
-      const refreshToken = this.tokenService.generateRefreshToken(user.id)
+        const accessToken = tokenService.generateAccessToken(user.id);
+        const refreshToken = tokenService.generateRefreshToken(user.id);
+        
 
-      await this.tokenService.saveRefreshToken(user.id, refreshToken)
+        await tokenService.saveRefreshToken(user.id, refreshToken)
 
-      res.json({ accessToken, refreshToken })
-    } catch (error) {
-      res.status(500).json({ message: 'Login failed' })
-    }
-  }
+        res.json({ accessToken, refreshToken })
 
-  public async RefreshToken(req: Request, res: Response) {
-    const { refreshToken } = req.body
-    if (!refreshToken) return res.status(401).json({ message: 'Refresh token required' })
+        return res.json({user , refreshToken,accessToken})
 
-    const payload = this.tokenService.verifyRefreshToken(refreshToken)
-    if (!payload) return res.status(403).json({ message: 'Invalid refresh token' })
-
-    const savedToken = await this.tokenService.getRefreshTokenByUserId(payload.userId)
-    if (!savedToken) return res.status(403).json({ message: 'Refresh token not found' })
-
-    const isValid = await bcrypt.compare(refreshToken, savedToken.hashedToken)
-    if (!isValid) return res.status(403).json({ message: 'Invalid refresh token' })
-
-    const newAccessToken = this.tokenService.generateAccessToken(payload.userId)
-    res.json({ accessToken: newAccessToken })
-  }
-
-  public async Logout(req: Request, res: Response) {
-    const { refreshToken } = req.body
-    if (!refreshToken) return res.status(400).json({ message: 'Refresh token required' })
-
-    const payload = this.tokenService.verifyRefreshToken(refreshToken)
-    if (payload) {
-      const savedToken = await this.tokenService.getRefreshTokenByUserId(payload.userId)
-
-      if (savedToken) {
-        await this.tokenService.deleteRefreshToken(savedToken.id)
-      }
+        
+    } catch (error:any) {
+        console.error('Unexpected error:', error);
+        return res.json({error: 'Unexpected error'}).status(500);
+        
     }
 
-    res.json({ message: 'Logged out successfully' })
-  }
 
-  public async ResetPassword(){}
- 
+    
 }
-
-export default AuthController
