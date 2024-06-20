@@ -2,7 +2,7 @@ import {type Request, type Response} from 'express'
 import {ErrorMiddleware} from '../middlewares/errorMiddleware'
 import prisma from '../utils/prisma'
 import { TokenService } from '../service/token.service'
-import { hashSync, compareSync } from 'bcrypt';
+import bcrypt,{ hashSync, compareSync } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
@@ -98,3 +98,40 @@ export async function register(req: Request, res: Response){
         return res.json({error: 'Unexpected error'}).status(500);
     }
 }
+
+export async function refreshToken(req: Request, res: Response) {
+    const { refreshToken } = req.body
+    if (!refreshToken) return res.status(401).json({ message: 'Refresh token required' })
+
+    const payload = tokenService.verifyRefreshToken(refreshToken)
+    if (!payload) return res.status(403).json({ message: 'Invalid refresh token' })
+
+    const savedToken = await tokenService.getRefreshTokenByUserId(payload.userId)
+    if (!savedToken) return res.status(403).json({ message: 'Refresh token not found' })
+
+    const isValid = await bcrypt.compare(refreshToken, savedToken.hashedToken)
+    if (!isValid) return res.status(403).json({ message: 'Invalid refresh token' })
+
+    const newAccessToken = tokenService.generateAccessToken(payload.userId)
+    res.json({ accessToken: newAccessToken })
+}
+
+export async function logout(req: Request, res: Response) {
+    const { refreshToken } = req.body
+    if (!refreshToken) return res.status(400).json({ message: 'Refresh token required' })
+
+    const payload = tokenService.verifyRefreshToken(refreshToken)
+    if (payload) {
+      const savedToken = await tokenService.getRefreshTokenByUserId(payload.userId)
+
+      if (savedToken) {
+        await tokenService.deleteRefreshToken(savedToken.id)
+      }
+    }
+
+    res.json({ message: 'Logged out successfully' })
+  }
+
+
+ // OTP FUNCTION
+ // RESET PASSWORD
