@@ -63,4 +63,25 @@ export async function getUserById(req:Request, res:Response){
     }
 }
 
-export async function getUserCourses(req: Request, res: Response){}
+export async function getUserCourses(req: Request, res: Response){
+    const {id} = req.params;
+
+    if(!id){
+        const error = new ErrorMiddleware( 400,'User ID is required')
+        return res.json(error.message).status(error.status)
+    }
+
+    try {
+        const courses = await prisma.userCourses.findMany({
+            where: {
+                userId: id
+            }
+        })
+
+        res.status(200).json(courses)
+    } catch (err) {
+        console.log(err);
+        const error = new ErrorMiddleware( 500,`Internal Server Error, ${err.toString()}`)
+        return res.json(error.message).status(error.status)
+    }
+}

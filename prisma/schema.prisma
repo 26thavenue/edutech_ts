@@ -91,6 +91,9 @@ model UserCourses{
   course      Course   @relation(fields: [courseId], references: [id])
   isCompleted Boolean @default(false)
   percentageCompleted Int @default(0)
+
+  @@unique([userId, courseId])
+  
   @@id([courseId, userId])
 }
 
