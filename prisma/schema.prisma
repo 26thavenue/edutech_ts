@@ -148,8 +148,7 @@ model UserLessons{
 model Assessment{
   id          String   @id @default(cuid())
   title       String
-  description String
-  passingMarker Int    @default(0)
+  passingMark Int    @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   lessonId    String?
@@ -180,19 +179,20 @@ model UserAssessmentScore {
 model Question {
   id                  String   @id @default(cuid())
   title               String
-  description         String
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
   assessmentId        String
   assessment          Assessment @relation(fields: [assessmentId], references: [id])
   options             Option[]
+  multichoice         Boolean @default(true)
+
 }
 
 
 model Option{
   id          String   @id @default(cuid())
-  title       String
-  isCorrect   Boolean 
+  option       String
+  isCorrect   Boolean @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   questionId  String
