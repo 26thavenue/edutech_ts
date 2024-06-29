@@ -208,3 +208,8 @@ export async function removeEnrolledCourse(req: Request, res: Response){
 
 export async function updateCourseDetails(req: Request, res: Response){}
 
+
+export async function getCourseAssignments(res:Response, req:Request){
+
+}
+

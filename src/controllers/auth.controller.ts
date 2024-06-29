@@ -11,8 +11,6 @@ dotenv.config()
 const tokenService = new TokenService()
 
 
-
-
 export async function login(req: Request, res: Response){
     // console.log(req.body)
     const { email, password } = req.body 

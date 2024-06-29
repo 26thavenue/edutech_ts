@@ -24,11 +24,7 @@ enum SubscriptionDuration{
   YEARLY
 }
 
-enum SUBSCRIBED{
-  TRUE
-  FALSE
-  EXPIRED
-}
+
 
 model User {
   id   String @id @default(cuid())
@@ -54,7 +50,9 @@ model Subscription{
   duration    SubscriptionDuration
   createdAt   DateTime @default(now())
   expires     DateTime
-  subscribed  SUBSCRIBED @default(TRUE)
+  subscribed  Boolean @default(false)
+
+   @@index([expires, subscribed])
 }
 
 

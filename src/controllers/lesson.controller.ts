@@ -4,24 +4,25 @@ import prisma from '../utils/prisma'
 import {Lesson} from '@prisma/client'
 
 export async function createLesson(res:Response, req:Request){
-    const {title, description, courseId} = req.body
+    const {title, description, chapterId, videoUrl} = req.body
 
-    if(!title || !description || !courseId){
+    if(!title || !description || !chapterId || !videoUrl){
         const error = new ErrorMiddleware(400,'All fields are required')
         return res.status(error.status).json(error.message)
     }
 
     try {
 
-        const chapter = await prisma.chapter.create({
+        const lesson = await prisma.lesson.create({
             data:{
                 title,
                 description,
-                courseId
+                chapterId,
+                videoUrl
             }
         })
 
-        return res.status(201).json(chapter)
+        return res.status(201).json(lesson)
         
     } catch (err) {
         console.log(err)
@@ -106,10 +107,11 @@ export async function getAllLessons(res:Response, req:Request){
 
 }
 
-export async function getChapterAssignments(res:Response, req:Request){
+export async function getLessonAssignments(res:Response, req:Request){
 
 }
 
 export async function updateProgress(res:Response, req:Request){
 
 }
+
